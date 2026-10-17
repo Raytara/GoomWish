@@ -1,0 +1,85 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Design tokens du projet Open Design « GoomY perso » */
+:root {
+  --color-primary: rgb(79, 184, 178);
+  --color-secondary: rgb(255, 255, 255);
+  --color-tertiary: rgb(0, 0, 0);
+
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --ink: #1b1a24;
+  --muted: #5b5870;
+  --line: #e9e5e0;
+  --accent: #d92d20;
+  --accent-ink: #ffffff;
+  --accent-soft: #ffe4df;
+  --accent-text: #b42318;
+  --pill-bg: #f2efea;
+  --ok: #1e7a3c;
+  --ok-soft: #d9f4df;
+  --err: #b42318;
+  --err-soft: #fee4e2;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #15131a;
+  --surface: #211e29;
+  --ink: #f7f3fa;
+  --muted: #b9b3c9;
+  --line: #37323f;
+  --accent: #ff6a55;
+  --accent-ink: #1a0f0e;
+  --accent-soft: #3f1f1d;
+  --accent-text: #ffb4a8;
+  --pill-bg: #2b2733;
+  --ok: #7ee0a0;
+  --ok-soft: #1b3326;
+  --err: #ff9a8e;
+  --err-soft: #43201d;
+}
+
+@theme inline {
+  /* Mobile d'abord : le style de base cible le téléphone, ces seuils ne font qu'enrichir */
+  --breakpoint-tablet: 481px;
+  --breakpoint-desktop: 900px;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-text: var(--accent-text);
+  --color-pill: var(--pill-bg);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-err: var(--err);
+  --color-err-soft: var(--err-soft);
+  --font-display:
+    'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia,
+    serif;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    overscroll-behavior-y: none;
+    background-color: var(--bg);
+    color: var(--ink);
+  }
+
+  button,
+  a {
+    touch-action: manipulation;
+  }
+}

@@ -1,0 +1,25 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
+.env
+.nitro
+.tanstack
+.wrangler
+.output
+.vinxi
+__unconfig*
+todos.json
+
+# base SQLite locale
+data/
+tmp/
+
+# Filets de sécurité : variantes de .env (sauf l'exemple) et bases SQLite où qu'elles soient
+.env.*
+!.env.example
+*.db
+*.db-shm
+*.db-wal
+*.log

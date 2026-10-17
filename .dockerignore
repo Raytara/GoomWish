@@ -1,0 +1,14 @@
+# Ne jamais copier dans l'image : secrets, données, dépendances et sorties locales
+.env
+.env.*
+!.env.example
+data
+tmp
+node_modules
+dist
+dist-ssr
+.git
+.vscode
+.tanstack
+.output
+*.log
