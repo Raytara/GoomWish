@@ -7,6 +7,7 @@ import {
   ExternalLink,
   Heart,
   Minus,
+  Pencil,
   Plus,
   TriangleAlert,
 } from 'lucide-react'
@@ -149,6 +150,14 @@ function RecipeView({
             <ArrowLeft className="size-6" aria-hidden />
           </Link>
           <div className="flex-1" />
+          <Link
+            to="/modifier/$recipeId"
+            params={{ recipeId: String(stored.id) }}
+            aria-label="Modifier la recette"
+            className="grid size-12 place-items-center rounded-full transition-colors hover:bg-accent-soft"
+          >
+            <Pencil className="size-6" aria-hidden />
+          </Link>
           <button
             type="button"
             aria-pressed={fav}

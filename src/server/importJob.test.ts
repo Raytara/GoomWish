@@ -20,6 +20,12 @@ const recipe: Recipe = {
 
 function makeDeps(overrides: Partial<ImportDeps> = {}): ImportDeps {
   return {
+    fetchPage: vi.fn().mockResolvedValue({
+      url: 'https://www.exemple.fr/soupe',
+      title: 'Soupe de lentilles',
+      text: 'Ingrédients : lentilles',
+      site: 'exemple.fr',
+    }),
     fetchSource: vi.fn().mockResolvedValue({
       platform: 'tiktok',
       author: 'lou',
@@ -79,10 +85,42 @@ describe('import par lien', () => {
 
   it('refuse un lien invalide sans créer de job', () => {
     const deps = makeDeps()
-    expect(() => startImport({ url: 'https://example.com/v' }, deps)).toThrow(
+    expect(() => startImport({ url: 'pas un lien' }, deps)).toThrow(
       FetchSourceError,
     )
     expect(deps.fetchSource).not.toHaveBeenCalled()
+    expect(deps.fetchPage).not.toHaveBeenCalled()
+  })
+
+  it('lit une page web sans télécharger ni transcrire', async () => {
+    const deps = makeDeps()
+    const job = startImport({ url: 'https://www.exemple.fr/soupe' }, deps)
+    const done = await waitFor(job.id)
+
+    expect(done.status).toBe('done')
+    expect(deps.fetchSource).not.toHaveBeenCalled()
+    expect(deps.transcribeAudio).not.toHaveBeenCalled()
+    expect(deps.structureRecipe).toHaveBeenCalledWith({
+      title: 'Soupe de lentilles',
+      caption: 'Ingrédients : lentilles',
+      transcript: '',
+    })
+    const stored = getRecipe(done.recipeId!)!
+    expect(stored.sourcePlatform).toBe('web')
+    expect(stored.sourceAuthor).toBe('exemple.fr')
+    expect(stored.sourceUrl).toBe('https://www.exemple.fr/soupe')
+  })
+
+  it("garde le message quand la page n'est pas lisible", async () => {
+    const deps = makeDeps({
+      fetchPage: vi
+        .fn()
+        .mockRejectedValue(new UserFacingError('Le site est introuvable.')),
+    })
+    const job = startImport({ url: 'https://www.exemple.fr/soupe' }, deps)
+    const done = await waitFor(job.id)
+    expect(done.status).toBe('error')
+    expect(done.errorMessage).toBe('Le site est introuvable.')
   })
 
   it("garde le message et l'étape quand le téléchargement échoue", async () => {

@@ -10,9 +10,10 @@ services:
     init: true
     env_file: .env
     ports:
-      # Test sur le réseau local : "3000:3000".
-      # Avec Tailscale (tailscale serve 3000) : "127.0.0.1:3000:3000" pour ne rien exposer d'autre.
-      - "3000:3000"
+      # GOOMWISH_BIND se règle dans .env :
+      #   (absent)         -> accessible sur le réseau local, utile pour tester
+      #   GOOMWISH_BIND=127.0.0.1 -> accessible uniquement depuis le Raspberry (à utiliser avec Tailscale)
+      - "${GOOMWISH_BIND:-0.0.0.0}:3000:3000"
     volumes:
       # Les recettes sont conservées ici, même si le conteneur est reconstruit.
       # « :z » est nécessaire sur Fedora (SELinux) et sans effet ailleurs.

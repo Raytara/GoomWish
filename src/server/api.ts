@@ -11,6 +11,9 @@ import {
   setMenuSlot,
 } from './menuPlan'
 import { startImport } from './importJob'
+import { addManualRecipe, editRecipe } from './manualRecipe'
+import { readRecipePhotos, PhotosSchema } from './photo'
+import { RecipeSchema } from './schema'
 import {
   addRecipeToShopping,
   clearShoppingList,
@@ -36,6 +39,45 @@ export const startImportFn = createServerFn({ method: 'POST' })
     try {
       const job = startImport(data)
       return { ok: true as const, jobId: job.id }
+    } catch (err) {
+      if (err instanceof UserFacingError)
+        return { ok: false as const, error: err.message }
+      throw err
+    }
+  })
+
+/** Enregistre une recette écrite à la main. Renvoie son id, ou un message d'erreur à afficher. */
+export const createRecipeFn = createServerFn({ method: 'POST' })
+  .validator(RecipeSchema)
+  .handler(async ({ data }) => {
+    try {
+      return { ok: true as const, id: addManualRecipe(data).id }
+    } catch (err) {
+      if (err instanceof UserFacingError)
+        return { ok: false as const, error: err.message }
+      throw err
+    }
+  })
+
+/** Modifie une recette existante. Renvoie un message d'erreur à afficher si besoin. */
+export const updateRecipeFn = createServerFn({ method: 'POST' })
+  .validator(z.object({ id: z.number().int(), recipe: RecipeSchema }))
+  .handler(async ({ data }) => {
+    try {
+      return { ok: true as const, id: editRecipe(data.id, data.recipe).id }
+    } catch (err) {
+      if (err instanceof UserFacingError)
+        return { ok: false as const, error: err.message }
+      throw err
+    }
+  })
+
+/** Lit une recette sur des photos. Rien n'est enregistré : le résultat remplit le formulaire. */
+export const readPhotosFn = createServerFn({ method: 'POST' })
+  .validator(z.object({ photos: PhotosSchema }))
+  .handler(async ({ data }) => {
+    try {
+      return { ok: true as const, recipe: await readRecipePhotos(data.photos) }
     } catch (err) {
       if (err instanceof UserFacingError)
         return { ok: false as const, error: err.message }

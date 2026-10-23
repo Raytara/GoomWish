@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as ImportLinkRouteImport } from './routes/importLink'
+import { Route as NouvelleRecetteRouteImport } from './routes/nouvelleRecette'
+import { Route as ModifierRecipeIdRouteImport } from './routes/modifier.$recipeId'
 import { Route as RecettesRecipeIdRouteImport } from './routes/recettes.$recipeId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +31,16 @@ const ImportLinkRoute = ImportLinkRouteImport.update({
   path: '/importLink',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NouvelleRecetteRoute = NouvelleRecetteRouteImport.update({
+  id: '/nouvelleRecette',
+  path: '/nouvelleRecette',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ModifierRecipeIdRoute = ModifierRecipeIdRouteImport.update({
+  id: '/modifier/$recipeId',
+  path: '/modifier/$recipeId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecettesRecipeIdRoute = RecettesRecipeIdRouteImport.update({
   id: '/recettes/$recipeId',
   path: '/recettes/$recipeId',
@@ -39,12 +51,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/courses': typeof CoursesRoute
   '/importLink': typeof ImportLinkRoute
+  '/nouvelleRecette': typeof NouvelleRecetteRoute
+  '/modifier/$recipeId': typeof ModifierRecipeIdRoute
   '/recettes/$recipeId': typeof RecettesRecipeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/courses': typeof CoursesRoute
   '/importLink': typeof ImportLinkRoute
+  '/nouvelleRecette': typeof NouvelleRecetteRoute
+  '/modifier/$recipeId': typeof ModifierRecipeIdRoute
   '/recettes/$recipeId': typeof RecettesRecipeIdRoute
 }
 export interface FileRoutesById {
@@ -52,20 +68,43 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/courses': typeof CoursesRoute
   '/importLink': typeof ImportLinkRoute
+  '/nouvelleRecette': typeof NouvelleRecetteRoute
+  '/modifier/$recipeId': typeof ModifierRecipeIdRoute
   '/recettes/$recipeId': typeof RecettesRecipeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/courses' | '/importLink' | '/recettes/$recipeId'
+  fullPaths:
+    | '/'
+    | '/courses'
+    | '/importLink'
+    | '/nouvelleRecette'
+    | '/modifier/$recipeId'
+    | '/recettes/$recipeId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/courses' | '/importLink' | '/recettes/$recipeId'
-  id: '__root__' | '/' | '/courses' | '/importLink' | '/recettes/$recipeId'
+  to:
+    | '/'
+    | '/courses'
+    | '/importLink'
+    | '/nouvelleRecette'
+    | '/modifier/$recipeId'
+    | '/recettes/$recipeId'
+  id:
+    | '__root__'
+    | '/'
+    | '/courses'
+    | '/importLink'
+    | '/nouvelleRecette'
+    | '/modifier/$recipeId'
+    | '/recettes/$recipeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CoursesRoute: typeof CoursesRoute
   ImportLinkRoute: typeof ImportLinkRoute
+  NouvelleRecetteRoute: typeof NouvelleRecetteRoute
+  ModifierRecipeIdRoute: typeof ModifierRecipeIdRoute
   RecettesRecipeIdRoute: typeof RecettesRecipeIdRoute
 }
 
@@ -92,6 +131,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ImportLinkRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nouvelleRecette': {
+      id: '/nouvelleRecette'
+      path: '/nouvelleRecette'
+      fullPath: '/nouvelleRecette'
+      preLoaderRoute: typeof NouvelleRecetteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/modifier/$recipeId': {
+      id: '/modifier/$recipeId'
+      path: '/modifier/$recipeId'
+      fullPath: '/modifier/$recipeId'
+      preLoaderRoute: typeof ModifierRecipeIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recettes/$recipeId': {
       id: '/recettes/$recipeId'
       path: '/recettes/$recipeId'
@@ -106,6 +159,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CoursesRoute: CoursesRoute,
   ImportLinkRoute: ImportLinkRoute,
+  NouvelleRecetteRoute: NouvelleRecetteRoute,
+  ModifierRecipeIdRoute: ModifierRecipeIdRoute,
   RecettesRecipeIdRoute: RecettesRecipeIdRoute,
 }
 export const routeTree = rootRouteImport

@@ -5,6 +5,7 @@ import {
   ClipboardPaste,
   Link as LinkIcon,
   List,
+  PenLine,
   TriangleAlert,
   X,
 } from 'lucide-react'
@@ -18,7 +19,7 @@ type Mode = 'link' | 'text'
 
 // Étapes affichées (mêmes libellés que le design) ; la dernière est « Terminé ».
 const STEPS = [
-  "Téléchargement de l'audio",
+  'Récupération du contenu',
   'Transcription',
   'Lecture de la recette',
   'Terminé',
@@ -116,8 +117,8 @@ function ImportPage() {
       </header>
 
       <p className="text-muted">
-        Colle un lien Instagram, TikTok ou YouTube. L'audio est transcrit, puis
-        l'IA en tire la recette.
+        Colle un lien Instagram, TikTok ou YouTube (l'audio est transcrit), ou
+        celui d'une page de recette. L'IA en tire la recette.
       </p>
 
       <form
@@ -131,7 +132,7 @@ function ImportPage() {
         {mode === 'link' ? (
           <>
             <label htmlFor="url" className={ui.label}>
-              Lien de la vidéo
+              Lien de la vidéo ou de la page
             </label>
             <input
               id="url"
@@ -139,7 +140,7 @@ function ImportPage() {
               type="url"
               inputMode="url"
               autoComplete="off"
-              placeholder="https://www.tiktok.com/…"
+              placeholder="https://…"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               aria-describedby={formError ? 'form-error' : undefined}
@@ -204,6 +205,10 @@ function ImportPage() {
               </>
             )}
           </button>
+          <Link to="/nouvelleRecette" className={ui.btnGhost}>
+            <PenLine className="size-5" aria-hidden />
+            Écrire ma propre recette
+          </Link>
         </div>
       </form>
 

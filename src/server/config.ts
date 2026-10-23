@@ -73,6 +73,27 @@ export function sttConfig() {
   }
 }
 
+/**
+ * API de lecture d'images compatible OpenAI (par défaut : Groq, Llama 4 Scout).
+ * Les noms de modèles évoluent : VISION_MODEL permet de changer sans toucher au code.
+ */
+export function visionConfig() {
+  loadEnv()
+  const apiKey = keyFor(process.env.VISION_API_KEY)
+  if (!apiKey) {
+    throw new UserFacingError(
+      "La clé de l'API de lecture de photos est manquante. Ajoute GROQ_API_KEY dans le fichier .env " +
+        '(voir .env.example). Tu peux en attendant écrire la recette à la main.',
+    )
+  }
+  return {
+    baseUrl: trimSlash(process.env.VISION_BASE_URL || GROQ_URL),
+    apiKey,
+    model:
+      process.env.VISION_MODEL || 'meta-llama/llama-4-scout-17b-16e-instruct',
+  }
+}
+
 /** Message en français pour une réponse d'erreur d'une API. */
 export async function apiHttpError(
   response: Response,

@@ -147,14 +147,14 @@ function buildUserMessage({
   return text.slice(0, MAX_INPUT_CHARS)
 }
 
-const ChatResponseSchema = z.object({
+export const ChatResponseSchema = z.object({
   choices: z
     .array(z.object({ message: z.object({ content: z.string().nullable() }) }))
     .min(1),
 })
 
 /** Retire les balises ```json que certains modèles ajoutent autour de la réponse. */
-function stripCodeFence(text: string): string {
+export function stripCodeFence(text: string): string {
   return text
     .trim()
     .replace(/^```(?:json)?\s*/i, '')

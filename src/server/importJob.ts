@@ -1,6 +1,12 @@
 import { createJob, createRecipe, updateJob } from './db.ts'
 import { UserFacingError } from './errors.ts'
-import { cleanupSource, detectPlatform, fetchSource } from './fetchSource.ts'
+import { fetchPage } from './fetchPage.ts'
+import {
+  FetchSourceError,
+  cleanupSource,
+  detectPlatform,
+  fetchSource,
+} from './fetchSource.ts'
 import type { ImportJob } from './schema.ts'
 import { structureRecipe } from './structure.ts'
 import { transcribeAudio } from './transcribe.ts'
@@ -10,6 +16,7 @@ export type ImportRequest = { url: string } | { text: string }
 
 /** Les étapes du pipeline, remplaçables dans les tests. */
 export type ImportDeps = {
+  fetchPage: typeof fetchPage
   fetchSource: typeof fetchSource
   cleanupSource: typeof cleanupSource
   transcribeAudio: typeof transcribeAudio
@@ -17,10 +24,24 @@ export type ImportDeps = {
 }
 
 const defaultDeps: ImportDeps = {
+  fetchPage,
   fetchSource,
   cleanupSource,
   transcribeAudio,
   structureRecipe,
+}
+
+/** Vidéo (Instagram, TikTok, YouTube) ou page web de recette ; lève une erreur si le lien est invalide. */
+function linkKind(url: string): 'video' | 'web' {
+  try {
+    detectPlatform(url)
+    return 'video'
+  } catch (err) {
+    // Un lien correct mais d'un autre site : on le lit comme une page web.
+    if (err instanceof FetchSourceError && err.code === 'UNSUPPORTED_URL')
+      return 'web'
+    throw err
+  }
 }
 
 /**
@@ -34,7 +55,7 @@ export function startImport(
 ): ImportJob {
   let job: ImportJob
   if ('url' in request) {
-    detectPlatform(request.url) // vérifie le lien avant de créer quoi que ce soit
+    linkKind(request.url) // vérifie le lien avant de créer quoi que ce soit
     job = createJob(request.url.trim())
   } else {
     if (!request.text.trim())
@@ -62,7 +83,7 @@ export async function runImport(
     let transcript = ''
     let source: {
       url: string | null
-      platform: 'instagram' | 'tiktok' | 'youtube' | null
+      platform: 'instagram' | 'tiktok' | 'youtube' | 'web' | null
       author: string | null
     } = {
       url: null,
@@ -72,6 +93,12 @@ export async function runImport(
 
     if ('text' in request) {
       caption = request.text
+    } else if (linkKind(request.url) === 'web') {
+      updateJob(jobId, { step: 'download' })
+      const page = await deps.fetchPage(request.url)
+      title = page.title.length <= 100 ? page.title : ''
+      caption = page.text
+      source = { url: page.url, platform: 'web', author: page.site }
     } else {
       updateJob(jobId, { step: 'download' })
       const fetched = await deps.fetchSource(request.url)
